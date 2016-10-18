@@ -1,0 +1,27 @@
+(version 1)
+(deny default)
+
+(allow file-read*
+  (literal "/Library/Keychains")
+  (literal "/Library/Keychains/System.keychain")
+
+  (literal "/private/var/db/DetachedSignatures")
+  (literal "/private/var/run/systemkeychaincheck.done")
+  (literal "/private/var/db/mds/messages/se_SecurityMessages")
+  (regex   "^/Users/[a-z0-9_\-\.]\+/Library/Keychains")
+
+  (subpath "/private/var/db/mds")
+)
+
+(allow file-read-metadata
+  (literal "/private/var/db/mds")
+  (literal "/private/var/run/systemkeychaincheck.done")
+)
+
+(allow file-write-data
+  (literal "/private/var/db/mds/system/mds.lock")
+)
+
+(allow network-outbound
+  (literal "/private/var/run/systemkeychaincheck.socket")
+)

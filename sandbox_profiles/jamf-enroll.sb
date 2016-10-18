@@ -1,0 +1,16 @@
+(version 1)
+(import "/Library/Sandbox/Profiles/jamf-ro.sb")
+
+(deny default)
+
+; To allow Casper to set CA trust parameters
+(allow authorization-right-obtain)
+
+(allow file*
+  (literal "/Library/Preferences/com.jamfsoftware.jamf.plist")
+  (literal "/Library/Preferences/SystemConfiguration/preferences.plist.old")
+
+  ; To trust the CA certificate installed by Casper
+  (subpath "/Library/Keychains")
+  (subpath "/private/var/run/jamf")
+)

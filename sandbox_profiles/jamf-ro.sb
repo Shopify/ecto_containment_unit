@@ -1,0 +1,132 @@
+(version 1)
+(import "/Library/Sandbox/Profiles/jamf-keychain.sb")
+(deny default)
+
+; Policy language:
+;
+; https://reverse.put.as/wp-content/uploads/2011/09/Apple-Sandbox-Guide-v1.0.pdf
+
+; In general, the following is most of what you need to know:
+; 
+; "literal" means "literally this string"
+; "subpath" means "this path, and any child of this path"
+; "regex" means "any path matching this regular expression"
+; "allow <foo>" means allow "foo" on the noted objects, where "foo" is usually self-explanatory
+
+;; Allow read access to good chunks of the system
+(allow sysctl-read)
+(allow mach-lookup)
+(allow mach-register)
+(allow iokit-open)
+(allow ipc-posix-shm)
+
+;; Casper wants this enabled, but *seems* to run fine without it
+;; I don't know how to limit it to a specific operation, but my system wants to use `system-fsctl 682f` and `system-fctl 6811`
+(allow system-fsctl
+  (literal "682f")
+  (literal "6811")
+)
+
+;; `system-profiler` likes having this block enabled, but we appear to get what we need without it
+;(allow system-kext-query)
+;(allow file-write*
+;  (literal "/private/var/root/Library/Caches/com.apple.preferencepanes.cache")
+;  (literal "/private/var/root/Library/Caches/com.apple.preferencepanes.searchindexcache")
+;  (literal "/private/var/root/Library/Preferences/system_profiler.plist")
+;)
+
+;; Allow all outbound network access
+(allow network-outbound)
+(allow system-socket)
+
+;; Allow us to run any binary on the system
+;; (so long as we can read it)
+(allow process*)
+
+;; Be somewhat liberal with metadata reads
+;; This allows us to confirm the existence of files, as well as things like:
+;; * creation date
+;; * ownership
+;; * permissions
+;; etc.
+(allow file-read-metadata
+  (subpath "/dev")
+  (subpath "/private/etc")
+
+  (literal "/etc")
+  (literal "/home")
+  (literal "/net")
+  (literal "/var")
+  (literal "/private")
+  (literal "/private/var")
+  (literal "/private/var/db")
+  (literal "/private/var/root")
+
+  (literal "/Users/.localized")
+)
+
+;; Be somewhat more restrictive with reading contents
+(allow file-read*
+  ; Allow access to these directories, and any children thereof
+  (subpath "/Applications")
+  (subpath "/Library")
+  (subpath "/Network")
+  (subpath "/OS X Install Data")
+  (subpath "/System")
+  (subpath "/bin")
+  (subpath "/usr")
+  (subpath "/sbin")
+  (subpath "/private/var/root/Library")
+  (subpath "/private/var/db/receipts")
+  (subpath "/private/etc/cups")
+
+  ; Allow access to explicitly these directories
+  (literal "/")
+  (literal "/Volumes")
+  (literal "/Volumes/Recovery HD")
+  (literal "/dev")
+  (literal "/opt")
+  (literal "/private/var/log")
+
+  ; Allow access to explicitly these files
+  (literal "/dev/autofs_nowait")
+  (literal "/dev/null")
+  (literal "/dev/random")
+  (literal "/dev/tty")
+  (literal "/private/etc/hosts")
+  (literal "/private/var/root/.CFUserTextEncoding")
+  (literal "/private/var/root/Library/Preferences/.GlobalPreferences.plist")
+
+  ; Allow access to certain portions of the Users home directory
+  (literal "/Users")
+  (regex   "^/Users/[a-z0-9_\-\.]\+$")
+  (regex   "^/Users/[a-z0-9_\-\.]\+/Applications")
+  (regex   "^/Users/[a-z0-9_\-\.]\+/Library")
+)
+
+;; Be very restrictive on write access
+(allow file-write-data
+  (literal "/dev/null")
+  (literal "/dev/tty")
+  (literal "/private/var/run/utmpx")
+)
+
+;; And here is where we have full access to files
+(allow file*
+  ; Part of OS X, everything seems to do this
+  (literal "/dev/dtracehelper")
+
+  ; System logging
+  (literal "/private/var/run/utmpx")
+
+  ; Sytem configuration data
+  (literal "/Library/Preferences/SystemConfiguration/preferences.plist.old")
+
+  ; JAMF logging, scratch space, and predictable disk locations
+  (literal "/private/var/log/jamf.log")
+  (subpath "/private/var/log/jamf-recon")
+  (subpath "/private/var/folders/zz")
+  (subpath "/private/tmp")
+  (subpath "/Library/Application Support/JAMF")
+  (subpath "__CUSTOM_SCRIPTS_PATH__")
+)

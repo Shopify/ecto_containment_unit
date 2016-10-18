@@ -1,0 +1,24 @@
+#!/bin/sh
+
+# This is a static invitation ID generated as per the README.md
+INVITATION_ID=95726538482367374595837262627389272619
+
+# The URL to your JAMF server
+JAMF_SERVER_URL="https://widgetco.jamfcloud.com/"
+
+# This is the period at which you would like Casper to perform
+# system inventories, measured in seconds
+INVENTORY_PERIOD=43200
+
+# The name of your organization, in text. Used to make sure
+# we request the right information from your users.
+ORGANIZATION_NAME="Widget Co."
+
+# This is where custom scripts are placed for your organization
+# This is usually /Library/Scripts/<Casper organization name>
+CUSTOM_SCRIPTS_PATH="/Library/Scripts/Widget"
+
+# If your Casper deployment includes the creation of local
+# users, you probably want those removed. Just include the
+# Unix usernames in here
+LOCAL_CASPER_USERS="remoteadmin1 remoteadmin2"
