@@ -39,7 +39,7 @@ create_casper_recon_launch_daemon() {
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '/usr/bin/sandbox-exec'"
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '-f'"
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '/Library/Sandbox/Profiles/jamf-ro.sb'"
-  sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '${JAMF_BIN_DIR}'"
+  sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '${JAMF_BIN_DIR}/jamf'"
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string 'recon'"
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '-saveFormTo'"
   sudo /usr/libexec/PlistBuddy "${plist}" -c "Add :ProgramArguments: string '/var/log/jamf-recon'"
